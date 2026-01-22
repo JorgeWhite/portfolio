@@ -1,7 +1,7 @@
 # Python
 __pycache__/
 *.pyc
-venv/
+webenv/
 
 # Environment variables
 .env
