@@ -8,5 +8,5 @@ def root():
 
 @app.get("/hello")
 def hello():
-    return {"hello": "Hello from FastAPI, Deployment test succesful"}
+    return {"hello": "Hello from FastAPI, Deployment test succesful, newer version"}
 
