@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Gambler's Ruin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <style>
+        body {
+            background: #0f172a;
+            color: #e5e7eb;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #track {
+            margin: 40px auto;
+            width: 600px;
+            height: 60px;
+            border: 2px solid #38bdf8;
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .state {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #64748b;
+            border-radius: 50%;
+        }
+
+        #player {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background: #38bdf8;
+            border-radius: 50%;
+            z-index: 2;
+            transition: left 0.15s linear;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #38bdf8;
+            color: #020617;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+
+        #info {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .scene {
+            max-width: 860px;
+            margin: 20px auto 0;
+            padding: 18px;
+            background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
+            border: 1px solid #1f2937;
+            border-radius: 12px;
+        }
+
+        .scene-title {
+            margin-bottom: 10px;
+            font-size: 15px;
+            color: #cbd5e1;
+        }
+
+        .gambler-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 10px;
+        }
+
+        .gambler {
+            width: 74px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .gambler-head {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fde68a;
+            border: 2px solid #f59e0b;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .gambler-head-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gambler-body {
+            width: 34px;
+            height: 52px;
+            border-radius: 10px;
+            background: #38bdf8;
+            border: 2px solid #0284c7;
+        }
+
+        .mood-text {
+            min-width: 130px;
+            text-align: left;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .coins-wrap {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .coins-label {
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+
+        .coins-stack {
+            width: min(95%, 760px);
+            min-height: 76px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #020617;
+            border: 1px dashed #334155;
+        }
+
+        .coin {
+            width: 16px;
+            height: 16px;
+            display: block;
+            object-fit: contain;
+            background: transparent;
+            mix-blend-mode: normal;
+            filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
+        }
+
+        .coin-enter {
+            animation: coinIn 0.22s ease-out;
+        }
+
+        .coin-exit {
+            animation: coinOut 0.2s ease-in forwards;
+        }
+
+        @keyframes coinIn {
+            0% { transform: translateY(-10px) scale(0.6); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        @keyframes coinOut {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(10px) scale(0.5); opacity: 0; }
+        }
+
+        .gambler-happy .gambler-head {
+            transform: scale(1.08);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3);
+        }
+
+        .gambler-sad .gambler-head {
+            transform: scale(0.96);
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.35);
+        }
+
+        .panel {
+            max-width: 760px;
+            margin: 24px auto 0;
+            background: #111827;
+            border: 1px solid #1f2937;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: left;
+        }
+
+        .row {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+            gap: 6px;
+            min-width: 150px;
+        }
+
+        input {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0b1220;
+            color: #e5e7eb;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            margin: 0;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .formula-output {
+            margin-bottom: 14px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0b1220;
+        }
+
+        .formula-title {
+            font-size: 14px;
+            color: #93c5fd;
+            margin-bottom: 8px;
+        }
+
+        .formula-line {
+            margin: 8px 0;
+            color: #e5e7eb;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 2px;
+        }
+
+        .formula-numeric {
+            margin: 4px 0 10px;
+            color: #bae6fd;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .context-card {
+            max-width: 860px;
+            margin: 18px auto 0;
+            text-align: left;
+            background: #0b1220;
+            border: 1px solid #1f2937;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .context-card h2 {
+            font-size: 18px;
+            margin: 0 0 8px;
+            color: #bae6fd;
+        }
+
+        .context-card p {
+            margin: 0 0 8px;
+            color: #dbeafe;
+            line-height: 1.45;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Gambler’s Ruin</h1>
+<p>
+A gambler repeatedly wins or loses one unit of money.
+Eventually, they are ruined — or reach a target.
+</p>
+
+<div class="context-card">
+    <h2>What is Gambler's Ruin?</h2>
+    <p>
+        Gambler's Ruin is a classic probability model: a player starts with finite capital and repeatedly wins or loses one unit.
+        The game ends when the capital hits one of two absorbing states: ruin at 0 or success at target n.
+    </p>
+    <p>
+        The process is a finite Markov chain and a bounded random walk. It is memoryless because the next move depends only on the current capital.
+        This makes it ideal for understanding absorption probabilities and expected hitting times.
+    </p>
+    <p>
+        Historically, it appears in early studies of random games in the 17th-18th centuries and later became a foundational example
+        in modern stochastic processes and Markov chain theory.
+    </p>
+</div>
+
+<div id="track"></div>
+
+<div class="scene">
+    <div class="scene-title">Animated gambler and money pile</div>
+    <div id="gamblerRow" class="gambler-row">
+        <div id="gambler" class="gambler">
+            <div class="gambler-head">
+                <img id="gamblerFace" class="gambler-head-image" src="" alt="Gambler neutral mood" />
+            </div>
+            <div class="gambler-body"></div>
+        </div>
+        <div id="moodText" class="mood-text">Mood: focused</div>
+    </div>
+    <div class="coins-wrap">
+        <div class="coins-label">Money stack (1 coin = 1 unit)</div>
+        <div id="coinsStack" class="coins-stack"></div>
+    </div>
+</div>
+
+<div class="row">
+    <label>
+        N (target)
+        <input id="nInput" type="number" min="2" max="200" value="20" />
+    </label>
+    <label>
+        Initial capital
+        <input id="initialInput" type="number" min="1" max="199" value="10" />
+    </label>
+    <label>
+        p(win)
+        <input id="pInput" type="number" min="0.01" max="0.99" step="0.01" value="0.5" />
+    </label>
+    <label>
+        Monte Carlo trials
+        <input id="trialsInput" type="number" min="0" max="200000" step="1000" value="20000" />
+    </label>
+</div>
+
+<button onclick="step()">Step</button>
+<button id="runBtn" onclick="letRun()">Let Run</button>
+<button onclick="reset()">Reset</button>
+<button id="explainBtn" onclick="toggleMathExplanation()">Show mathematical explanation</button>
+
+<div id="info"></div>
+
+<div id="stepStatsPanel" class="panel" style="margin-top: 12px; display: none;">
+    <pre id="stepStats">Steps: 0
+Expected steps (backend): not loaded
+Absorption summary: process not absorbed yet</pre>
+</div>
+
+<div id="mathPanel" class="panel" style="display: none;">
+    <div id="formulaOutput" class="formula-output"></div>
+    <pre id="mathOutput">Press "Show mathematical explanation" to request theory + Monte Carlo from FastAPI.</pre>
+</div>
+
+<script>
+    const API_BASE_URL = "http://127.0.0.1:8000";
+
+    const ASSET_FOLDER = "../../images/gambler_mood/";
+    const MOOD_IMAGES = {
+        neutral: "Intense poker showdown expression.png",
+        sad: "Poker defeat and frustration..png",
+        happy: "Victory at the poker table.png",
+    };
+    const COIN_IMAGE = "moneda.png";
+
+    let n = 20;
+    let money = 10;
+    let pWin = 0.5;
+    let runTimer = null;
+    let currentSteps = 0;
+    let expectedStepsFromBackend = null;
+    let isExplanationVisible = false;
+
+    const track = document.getElementById("track");
+    const info = document.getElementById("info");
+    const runBtn = document.getElementById("runBtn");
+    const explainBtn = document.getElementById("explainBtn");
+    const mathPanel = document.getElementById("mathPanel");
+    const formulaOutput = document.getElementById("formulaOutput");
+    const mathOutput = document.getElementById("mathOutput");
+    const stepStatsPanel = document.getElementById("stepStatsPanel");
+    const stepStats = document.getElementById("stepStats");
+    const coinsStack = document.getElementById("coinsStack");
+    const gambler = document.getElementById("gambler");
+    const gamblerFace = document.getElementById("gamblerFace");
+    const moodText = document.getElementById("moodText");
+
+    const nInput = document.getElementById("nInput");
+    const initialInput = document.getElementById("initialInput");
+    const pInput = document.getElementById("pInput");
+    const trialsInput = document.getElementById("trialsInput");
+
+    const player = document.createElement("div");
+    player.id = "player";
+
+    function assetPath(fileName) {
+        return ASSET_FOLDER + encodeURIComponent(fileName);
+    }
+
+    function createCoin(isEntering) {
+        const coin = document.createElement("img");
+        coin.className = isEntering ? "coin coin-enter" : "coin";
+        coin.src = assetPath(COIN_IMAGE);
+        coin.alt = "coin";
+        return coin;
+    }
+
+    function syncCoins(targetMoney) {
+        coinsStack.innerHTML = "";
+        for (let i = 0; i < targetMoney; i++) {
+            coinsStack.appendChild(createCoin(false));
+        }
+    }
+
+    function reconcileCoins(targetMoney) {
+        const currentCoins = coinsStack.childElementCount;
+
+        if (targetMoney > currentCoins) {
+            const toAdd = targetMoney - currentCoins;
+            for (let i = 0; i < toAdd; i++) {
+                coinsStack.appendChild(createCoin(true));
+            }
+            return;
+        }
+
+        if (targetMoney < currentCoins) {
+            const toRemove = currentCoins - targetMoney;
+            for (let i = 0; i < toRemove; i++) {
+                if (!coinsStack.lastElementChild) {
+                    break;
+                }
+                coinsStack.removeChild(coinsStack.lastElementChild);
+            }
+        }
+    }
+
+    function updateGamblerMood() {
+        gambler.classList.remove("gambler-happy", "gambler-sad");
+        if (money === 0) {
+            gambler.classList.add("gambler-sad");
+            gamblerFace.src = assetPath(MOOD_IMAGES.sad);
+            gamblerFace.alt = "Gambler sad mood";
+            moodText.textContent = "Mood: sad, ruined at state 0";
+            return;
+        }
+
+        if (money === n) {
+            gambler.classList.add("gambler-happy");
+            gamblerFace.src = assetPath(MOOD_IMAGES.happy);
+            gamblerFace.alt = "Gambler happy mood";
+            moodText.textContent = `Mood: happy, reached target ${n}`;
+            return;
+        }
+
+        gamblerFace.src = assetPath(MOOD_IMAGES.neutral);
+        gamblerFace.alt = "Gambler neutral mood";
+        moodText.textContent = "Mood: focused";
+    }
+
+    function drawStates() {
+        track.innerHTML = "";
+        for (let i = 0; i <= n; i++) {
+            const s = document.createElement("div");
+            s.className = "state";
+            s.style.left = (i / n * 100) + "%";
+            track.appendChild(s);
+        }
+        track.appendChild(player);
+    }
+
+    function renderStepStats(absorptionText = "process not absorbed yet") {
+        const expectedLabel = expectedStepsFromBackend === null
+            ? "not loaded"
+            : expectedStepsFromBackend.toFixed(3);
+
+        stepStats.textContent = [
+            `Steps: ${currentSteps}`,
+            `Expected steps (backend): ${expectedLabel}`,
+            `Absorption summary: ${absorptionText}`,
+        ].join("\n");
+    }
+
+    function setStepStatsVisible(isVisible) {
+        stepStatsPanel.style.display = isVisible ? "block" : "none";
+    }
+
+    function setExplanationVisible(isVisible) {
+        isExplanationVisible = isVisible;
+        mathPanel.style.display = isVisible ? "block" : "none";
+        setStepStatsVisible(isVisible);
+        explainBtn.textContent = isVisible
+            ? "Hide mathematical explanation"
+            : "Show mathematical explanation";
+    }
+
+    function getAbsorptionSummary() {
+        if (!(money === 0 || money === n)) {
+            return "process not absorbed yet";
+        }
+
+        const stateLabel = money === 0 ? "ruin (0)" : `target (${n})`;
+
+        if (expectedStepsFromBackend === null) {
+            return `absorbed at ${stateLabel} in ${currentSteps} steps (load backend explanation to compare)`;
+        }
+
+        const diff = currentSteps - expectedStepsFromBackend;
+        const rel = expectedStepsFromBackend === 0
+            ? 0
+            : (Math.abs(diff) / expectedStepsFromBackend) * 100;
+        const direction = diff >= 0 ? "above" : "below";
+
+        return `absorbed at ${stateLabel} in ${currentSteps} steps, ${Math.abs(diff).toFixed(3)} ${direction} expected (${rel.toFixed(2)}%)`;
+    }
+
+    function updatePlayer() {
+        player.style.left = (money / n * 100) + "%";
+        info.innerText = `Current money: ${money} | Steps: ${currentSteps} | Absorbing states: 0 and ${n}`;
+        reconcileCoins(money);
+        updateGamblerMood();
+    }
+
+    function step() {
+        if (money === 0 || money === n) {
+            renderStepStats(getAbsorptionSummary());
+            stopRun();
+            return;
+        }
+
+        const r = Math.random();
+        if (r < pWin) {
+            money += 1;
+        } else {
+            money -= 1;
+        }
+        currentSteps += 1;
+
+        updatePlayer();
+        renderStepStats(getAbsorptionSummary());
+
+        if (money === 0 || money === n) {
+            stopRun();
+        }
+    }
+
+    function letRun() {
+        if (runTimer !== null) return;
+        runBtn.disabled = true;
+        runTimer = setInterval(step, 120);
+    }
+
+    function stopRun() {
+        if (runTimer !== null) {
+            clearInterval(runTimer);
+            runTimer = null;
+        }
+        runBtn.disabled = false;
+    }
+
+    function reset() {
+        stopRun();
+        syncParamsFromInputs();
+        money = Number(initialInput.value);
+        currentSteps = 0;
+        expectedStepsFromBackend = null;
+        drawStates();
+        syncCoins(money);
+        updatePlayer();
+        renderStepStats();
+        setExplanationVisible(false);
+    }
+
+    function syncParamsFromInputs() {
+        n = Math.max(2, Number(nInput.value));
+        pWin = Number(pInput.value);
+
+        if (!(pWin > 0 && pWin < 1)) {
+            pWin = 0.5;
+            pInput.value = "0.5";
+        }
+
+        initialInput.max = String(n - 1);
+        const initial = Number(initialInput.value);
+        if (!(initial >= 1 && initial < n)) {
+            initialInput.value = String(Math.max(1, Math.min(n - 1, initial || 1)));
+        }
+    }
+
+    function buildLatexFormulas(data) {
+        const i = data.model.initial_capital;
+        const nValue = data.model.n;
+        const p = data.model.p_win;
+        const q = data.model.p_lose;
+        const isFair = Math.abs(p - 0.5) < 1e-12;
+        const ratio = q / p;
+        const p0 = data.theory.ruin_probability;
+        const pn = data.theory.target_probability;
+        const expected = data.theory.expected_steps_to_absorption;
+
+        let p0NumericTex = "";
+        let pnNumericTex = "";
+        let expectedNumericTex = "";
+
+        if (isFair) {
+            p0NumericTex = `P_0(${i})=1-\\frac{${i}}{${nValue}}=${p0.toFixed(6)}`;
+            pnNumericTex = `P_n(${i})=\\frac{${i}}{${nValue}}=${pn.toFixed(6)}`;
+            expectedNumericTex = `\\mathbb{E}[T_{${i}}]=${i}(${nValue}-${i})=${expected.toFixed(3)}`;
+        } else {
+            p0NumericTex = `P_0(${i})=\\frac{\\left(${ratio.toFixed(6)}\\right)^{${i}}-\\left(${ratio.toFixed(6)}\\right)^{${nValue}}}{1-\\left(${ratio.toFixed(6)}\\right)^{${nValue}}}=${p0.toFixed(6)}`;
+            pnNumericTex = `P_n(${i})=\\frac{1-\\left(${ratio.toFixed(6)}\\right)^{${i}}}{1-\\left(${ratio.toFixed(6)}\\right)^{${nValue}}}=${pn.toFixed(6)}`;
+            expectedNumericTex = `\\mathbb{E}[T_{${i}}]=\\frac{${i}}{${(q - p).toFixed(6)}}-\\frac{${nValue}}{${(q - p).toFixed(6)}}\\cdot\\frac{1-\\left(${ratio.toFixed(6)}\\right)^{${i}}}{1-\\left(${ratio.toFixed(6)}\\right)^{${nValue}}}=${expected.toFixed(3)}`;
+        }
+
+        return [
+            { label: "Notation", tex: `i=${i},\\; n=${nValue},\\; p=${p.toFixed(3)},\\; q=${q.toFixed(3)}=1-p` },
+            {
+                label: "Absorption at 0",
+                tex: "P_{0}(i)=\\begin{cases}1-\\frac{i}{n}, & p=\\frac{1}{2}\\\\ \\frac{\\left(\\frac{q}{p}\\right)^{i}-\\left(\\frac{q}{p}\\right)^{n}}{1-\\left(\\frac{q}{p}\\right)^{n}}, & p\\neq\\frac{1}{2}\\end{cases}",
+                numericTex: p0NumericTex,
+            },
+            {
+                label: "Absorption at n",
+                tex: "P_{n}(i)=1-P_{0}(i)=\\begin{cases}\\frac{i}{n}, & p=\\frac{1}{2}\\\\ \\frac{1-\\left(\\frac{q}{p}\\right)^{i}}{1-\\left(\\frac{q}{p}\\right)^{n}}, & p\\neq\\frac{1}{2}\\end{cases}",
+                numericTex: pnNumericTex,
+            },
+            {
+                label: "Expected steps",
+                tex: "\\mathbb{E}[T_i]=\\begin{cases}i(n-i), & p=\\frac{1}{2}\\\\ \\frac{i}{q-p}-\\frac{n}{q-p}\\cdot\\frac{1-\\left(\\frac{q}{p}\\right)^i}{1-\\left(\\frac{q}{p}\\right)^n}, & p\\neq\\frac{1}{2}\\end{cases}",
+                numericTex: expectedNumericTex,
+            },
+        ];
+    }
+
+    function renderLatexFormulas(data) {
+        const formulas = buildLatexFormulas(data);
+
+        if (typeof window.katex === "undefined") {
+            formulaOutput.textContent = "KaTeX could not be loaded. Showing text formulas only.";
+            return;
+        }
+
+        const html = formulas.map((item) => {
+            const rendered = window.katex.renderToString(item.tex, {
+                throwOnError: false,
+                displayMode: true,
+            });
+
+            let numericBlock = "";
+            if (item.numericTex) {
+                const numericRendered = window.katex.renderToString(item.numericTex, {
+                    throwOnError: false,
+                    displayMode: true,
+                });
+                numericBlock = `<div class="formula-numeric">${numericRendered}</div>`;
+            }
+
+            return [
+                `<div class="formula-title">${item.label}</div>`,
+                `<div class="formula-line">${rendered}</div>`,
+                numericBlock,
+            ].join("");
+        }).join("");
+
+        formulaOutput.innerHTML = html;
+    }
+
+    async function toggleMathExplanation() {
+        if (isExplanationVisible) {
+            setExplanationVisible(false);
+            return;
+        }
+
+        syncParamsFromInputs();
+        const trials = Math.max(0, Number(trialsInput.value));
+        setExplanationVisible(true);
+
+        const payload = {
+            n: n,
+            initial_capital: Number(initialInput.value),
+            p_win: pWin,
+            monte_carlo_trials: trials,
+        };
+
+        explainBtn.disabled = true;
+        mathOutput.textContent = "Loading explanation from backend...";
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/gamblers-ruin/explain`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`Backend error ${response.status}: ${errorBody}`);
+            }
+
+            const data = await response.json();
+            const theory = data.theory;
+            const mc = data.monte_carlo;
+            const explanation = data.didactic_explanation || {};
+            expectedStepsFromBackend = Number(theory.expected_steps_to_absorption);
+            renderLatexFormulas(data);
+
+            const lines = [
+                "Model",
+                `- N = ${data.model.n}, initial = ${data.model.initial_capital}, p(win) = ${data.model.p_win.toFixed(3)}`,
+                "",
+                "Theory",
+                `- P(ruin) = ${theory.ruin_probability.toFixed(6)}`,
+                `- P(hit target) = ${theory.target_probability.toFixed(6)}`,
+                `- Expected absorption steps = ${theory.expected_steps_to_absorption.toFixed(3)}`,
+                "Monte Carlo",
+                mc.trials > 0
+                    ? `- Trials = ${mc.trials}, P(ruin) ~= ${mc.ruin_probability.toFixed(6)}, Mean steps ~= ${mc.mean_steps.toFixed(3)}`
+                    : "- Monte Carlo skipped (trials=0)",
+                "",
+                "Didactic note",
+                `- ${explanation.summary || "The chain moves +/-1 until absorption at 0 or N."}`,
+                `- ${explanation.how_it_works || "The next step depends only on the current state (memoryless process)."}`,
+                `- ${explanation.intuition || "Finite boundaries force eventual absorption; drift changes which boundary is more likely."}`,
+                `- ${explanation.history || "This is a classical problem in probability and random walks."}`,
+                "- Compare formulas, exact values, and Monte Carlo to build intuition.",
+            ];
+
+            mathOutput.textContent = lines.join("\n");
+            renderStepStats(getAbsorptionSummary());
+        } catch (error) {
+            mathOutput.textContent = `Could not fetch explanation.\n${error.message}`;
+            formulaOutput.textContent = "";
+            expectedStepsFromBackend = null;
+            renderStepStats(getAbsorptionSummary());
+        } finally {
+            explainBtn.disabled = false;
+        }
+    }
+
+    nInput.addEventListener("change", reset);
+    initialInput.addEventListener("change", reset);
+    pInput.addEventListener("change", reset);
+
+    drawStates();
+    syncCoins(money);
+    updatePlayer();
+    renderStepStats();
+    setExplanationVisible(false);
+</script>
+
+</body>
+</html>
