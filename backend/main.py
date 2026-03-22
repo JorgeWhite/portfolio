@@ -90,6 +90,7 @@ def run_monte_carlo(i: int, n: int, p: float, trials: int, seed: int | None) -> 
 
 
 @app.post("/api/gamblers-ruin/explain")
+@app.post("/gamblers-ruin/explain")
 def explain_gamblers_ruin(payload: GamblersRuinExplainRequest):
     try:
         i = payload.initial_capital
