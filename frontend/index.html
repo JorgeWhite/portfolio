@@ -2,23 +2,80 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jorge White</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <div class="container">
-    <h1>Jorge White</h1>
-    <h2>Mathematics · Statistics · Simulation </h2>
+  <div class="noise"></div>
+  <div class="crt-curvature"></div>
+  <div class="orb orb-left"></div>
+  <div class="orb orb-right"></div>
 
-    <p>
-      I build interactive visual explanations of stochastic processes,
-      focusing on intuition rather than formulas.
-    </p>
+  <main class="container">
+    <section class="crt-frame reveal hero-block">
+      <div class="landing-layout">
+        <figure class="profile-photo-wrap">
+          <img class="profile-photo" src="images/Photo/IMG_0283.png" alt="Portrait of Jorge White" />
+          <figcaption>Jorge White</figcaption>
+        </figure>
 
-    <a class="btn" href="/portfolio/">View Portfolio</a>
+        <section class="intro-copy">
+          <h1>Jorge White</h1>
+          <h2>Mathematics · Statistics · Simulation</h2>
+        </section>
+      </div>
+    </section>
 
-  </div>
+    <section class="crt-frame reveal info-block" aria-label="Projects">
+      <div class="background-panel">
+        <h3>Projects</h3>
+        <p>
+          Current project: Stochastic Simulations, an interactive set of visual
+          explorations for random processes focused on intuition rather than formulas.
+        </p>
+        <a class="btn" href="/portfolio/stochastic/">Open Stochastic Simulations</a>
+      </div>
+    </section>
+
+    <section class="crt-frame reveal info-block" aria-label="Academic background">
+      <div class="background-panel">
+        <h3>Academic Background</h3>
+        <p>
+          I studied Mathematics at the Faculty of Sciences at UNAM, where I built strong foundations in probability, statistics, data structures, and algorithms.
+        </p>
+      </div>
+    </section>
+
+    <section class="crt-frame reveal social-block" aria-label="Social media links">
+      <h3>Socials</h3>
+      <div class="social-links" aria-label="Social media links">
+        <a class="social-link" href="https://twitter.com/JorgeWhitee" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M18.9 2H22l-6.76 7.73L23.2 22h-6.24l-4.89-6.28L6.58 22H3.47l7.23-8.26L1 2h6.4l4.42 5.8L18.9 2Zm-1.09 18.12h1.73L6.45 3.78H4.59l13.22 16.34Z" />
+          </svg>
+          <span>Twitter</span>
+        </a>
+
+        <a class="social-link" href="https://instagram.com/jorgewhite" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.9A3.85 3.85 0 0 0 3.9 7.75v8.5A3.85 3.85 0 0 0 7.75 20.1h8.5a3.85 3.85 0 0 0 3.85-3.85v-8.5a3.85 3.85 0 0 0-3.85-3.85h-8.5Zm9.15 1.45a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 1.9a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2Z" />
+          </svg>
+          <span>Instagram</span>
+        </a>
+
+        <a class="social-link" href="https://twitch.tv/jorgewhite" target="_blank" rel="noopener noreferrer" aria-label="Twitch">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4 2 2 7v13h5v2h2l2-2h3l6-6V2H4Zm14 11-3.5 3.5h-4L8 19v-2.5H4V4h14v9ZM9 7h2v5H9V7Zm5 0h2v5h-2V7Z" />
+          </svg>
+          <span>Twitch</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/crt-shell.js"></script>
 
 </body>
 </html>

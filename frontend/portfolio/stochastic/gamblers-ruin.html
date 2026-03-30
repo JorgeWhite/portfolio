@@ -2,29 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gambler's Ruin</title>
+    <link rel="stylesheet" href="../../css/style.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
     <style>
-        body {
-            background: #0f172a;
-            color: #e5e7eb;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 40px;
-        }
-
-        h1 {
-            margin-bottom: 10px;
-        }
-
         #track {
-            margin: 40px auto;
-            width: 600px;
+            margin: 10px auto 18px;
+            width: min(100%, 760px);
             height: 60px;
-            border: 2px solid #38bdf8;
+            border: 2px solid rgba(192, 140, 255, 0.64);
             position: relative;
             border-radius: 8px;
+            background: linear-gradient(180deg, rgba(10, 7, 21, 0.8), rgba(14, 10, 30, 0.9));
+            box-shadow: 0 0 14px rgba(138, 44, 255, 0.25);
         }
 
         .state {
@@ -43,45 +35,52 @@
             transform: translate(-50%, -50%);
             width: 16px;
             height: 16px;
-            background: #38bdf8;
+            background: var(--cyan);
             border-radius: 50%;
             z-index: 2;
             transition: left 0.15s linear;
         }
 
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #38bdf8;
-            color: #020617;
+        .sim-controls {
+            margin-top: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
         }
 
-        button:hover {
-            background: #0ea5e9;
+        .sim-controls .btn {
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .sim-controls .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         #info {
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 14px;
+            font-size: 0.95rem;
+            color: var(--muted);
         }
 
         .scene {
             max-width: 860px;
-            margin: 20px auto 0;
+            margin: 6px auto 0;
             padding: 18px;
-            background: linear-gradient(180deg, #0b1220 0%, #111827 100%);
-            border: 1px solid #1f2937;
+            background: linear-gradient(160deg, rgba(22, 8, 46, 0.72), rgba(36, 12, 64, 0.54));
+            border: 1px solid rgba(192, 140, 255, 0.34);
             border-radius: 12px;
+            box-shadow: 0 0 12px rgba(138, 44, 255, 0.18);
         }
 
         .scene-title {
             margin-bottom: 10px;
             font-size: 15px;
-            color: #cbd5e1;
+            color: var(--muted);
+            letter-spacing: 0.6px;
         }
 
         .gambler-row {
@@ -90,6 +89,7 @@
             justify-content: center;
             gap: 18px;
             margin-bottom: 10px;
+            flex-direction: column;
         }
 
         .gambler {
@@ -121,15 +121,15 @@
             width: 34px;
             height: 52px;
             border-radius: 10px;
-            background: #38bdf8;
-            border: 2px solid #0284c7;
+            background: rgba(192, 140, 255, 0.82);
+            border: 2px solid rgba(246, 182, 255, 0.8);
         }
 
         .mood-text {
-            min-width: 130px;
-            text-align: left;
+            min-width: 0;
+            text-align: center;
             font-size: 14px;
-            color: #cbd5e1;
+            color: var(--muted);
         }
 
         .coins-wrap {
@@ -142,7 +142,7 @@
 
         .coins-label {
             font-size: 14px;
-            color: #cbd5e1;
+            color: var(--muted);
         }
 
         .coins-stack {
@@ -155,8 +155,8 @@
             gap: 8px;
             padding: 10px;
             border-radius: 8px;
-            background: #020617;
-            border: 1px dashed #334155;
+            background: rgba(7, 5, 18, 0.88);
+            border: 1px dashed rgba(192, 140, 255, 0.36);
         }
 
         .coin {
@@ -198,10 +198,10 @@
         }
 
         .panel {
-            max-width: 760px;
-            margin: 24px auto 0;
-            background: #111827;
-            border: 1px solid #1f2937;
+            width: min(100%, 860px);
+            margin: 10px auto 0;
+            background: linear-gradient(160deg, rgba(22, 8, 46, 0.72), rgba(36, 12, 64, 0.54));
+            border: 1px solid rgba(192, 140, 255, 0.34);
             border-radius: 8px;
             padding: 16px;
             text-align: left;
@@ -212,7 +212,7 @@
             gap: 14px;
             flex-wrap: wrap;
             justify-content: center;
-            margin-top: 16px;
+            margin-top: 12px;
         }
 
         label {
@@ -221,14 +221,18 @@
             font-size: 14px;
             gap: 6px;
             min-width: 150px;
+            text-align: left;
+            color: var(--muted);
         }
 
         input {
             padding: 8px;
             border-radius: 6px;
-            border: 1px solid #334155;
-            background: #0b1220;
-            color: #e5e7eb;
+            border: 1px solid rgba(192, 140, 255, 0.4);
+            background: rgba(7, 5, 18, 0.92);
+            color: var(--text);
+            font-family: "VT323", "Courier New", monospace;
+            font-size: 1.05rem;
         }
 
         pre {
@@ -243,19 +247,19 @@
             margin-bottom: 14px;
             padding: 12px;
             border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0b1220;
+            border: 1px solid rgba(192, 140, 255, 0.34);
+            background: rgba(7, 5, 18, 0.9);
         }
 
         .formula-title {
             font-size: 14px;
-            color: #93c5fd;
+            color: var(--gold);
             margin-bottom: 8px;
         }
 
         .formula-line {
             margin: 8px 0;
-            color: #e5e7eb;
+            color: var(--text);
             overflow-x: auto;
             overflow-y: hidden;
             padding-bottom: 2px;
@@ -263,114 +267,198 @@
 
         .formula-numeric {
             margin: 4px 0 10px;
-            color: #bae6fd;
+            color: var(--muted);
             overflow-x: auto;
             overflow-y: hidden;
         }
 
         .context-card {
-            max-width: 860px;
-            margin: 18px auto 0;
+            width: min(100%, 860px);
+            margin: 0 auto;
             text-align: left;
-            background: #0b1220;
-            border: 1px solid #1f2937;
+            background: linear-gradient(160deg, rgba(22, 8, 46, 0.72), rgba(36, 12, 64, 0.54));
+            border: 1px solid rgba(192, 140, 255, 0.35);
             border-radius: 10px;
             padding: 14px 16px;
+            box-shadow: 0 0 12px rgba(138, 44, 255, 0.22);
         }
 
         .context-card h2 {
-            font-size: 18px;
+            font-size: 1.45rem;
             margin: 0 0 8px;
-            color: #bae6fd;
+            color: var(--gold);
+            text-align: center;
         }
 
         .context-card p {
             margin: 0 0 8px;
-            color: #dbeafe;
+            color: var(--text);
             line-height: 1.45;
-            font-size: 14px;
+            font-size: 1.25rem;
+            max-width: none;
+        }
+        
+        .intro-copy {
+            text-align: center;
+            max-width: 760px;
+            margin: 0 auto;
+            color: var(--text);
+        }
+
+        .hero-title-block {
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .hero-title-block h1 {
+            margin-bottom: 0;
+        }
+
+        .hero-title-block .intro-copy {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .sim-frame {
+            width: min(100%, 900px);
+            margin: 0 auto;
+        }
+
+        .panel-block {
+            width: min(100%, 900px);
+            margin: 0 auto;
+        }
+
+        .container > .crt-frame {
+            width: min(100%, 940px);
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @media (max-width: 720px) {
+            #track {
+                height: 54px;
+            }
+
+            .gambler-row {
+                gap: 10px;
+            }
+
+            .mood-text {
+                min-width: 100px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
 
-<h1>Gambler’s Ruin</h1>
-<p>
-A gambler repeatedly wins or loses one unit of money.
-Eventually, they are ruined — or reach a target.
-</p>
+    <div class="noise"></div>
+    <div class="crt-curvature"></div>
+    <div class="orb orb-left"></div>
+    <div class="orb orb-right"></div>
 
-<div class="context-card">
-    <h2>What is Gambler's Ruin?</h2>
-    <p>
-        Gambler's Ruin is a classic probability model: a player starts with finite capital and repeatedly wins or loses one unit.
-        The game ends when the capital hits one of two absorbing states: ruin at 0 or success at target n.
-    </p>
-    <p>
-        The process is a finite Markov chain and a bounded random walk. It is memoryless because the next move depends only on the current capital.
-        This makes it ideal for understanding absorption probabilities and expected hitting times.
-    </p>
-    <p>
-        Historically, it appears in early studies of random games in the 17th-18th centuries and later became a foundational example
-        in modern stochastic processes and Markov chain theory.
-    </p>
-</div>
+    <main class="container">
 
-<div id="track"></div>
+        <section class="crt-frame reveal hero-block hero-title-block">
+            <h1>Gambler's Ruin</h1>
+            <p class="intro-copy">
+                A gambler repeatedly wins or loses one unit of money.
+                Eventually, they are ruined or reach a target.
+            </p>
+        </section>
 
-<div class="scene">
-    <div class="scene-title">Animated gambler and money pile</div>
-    <div id="gamblerRow" class="gambler-row">
-        <div id="gambler" class="gambler">
-            <div class="gambler-head">
-                <img id="gamblerFace" class="gambler-head-image" src="" alt="Gambler neutral mood" />
+        <section class="crt-frame reveal info-block">
+            <div class="context-card">
+                <h2>What is Gambler's Ruin?</h2>
+                <p>
+                    Gambler's Ruin is a classic probability model: a player starts with finite capital and repeatedly wins or loses one unit.
+                    The game ends when the capital hits one of two absorbing states: ruin at 0 or success at target n.
+                </p>
+                <p>
+                    The process is a finite Markov chain and a bounded random walk. It is memoryless because the next move depends only on the current capital.
+                    This makes it ideal for understanding absorption probabilities and expected hitting times.
+                </p>
+                <p>
+                    Historically, it appears in early studies of random games in the 17th-18th centuries and later became a foundational example
+                    in modern stochastic processes and Markov chain theory.
+                </p>
             </div>
-            <div class="gambler-body"></div>
-        </div>
-        <div id="moodText" class="mood-text">Mood: focused</div>
-    </div>
-    <div class="coins-wrap">
-        <div class="coins-label">Money stack (1 coin = 1 unit)</div>
-        <div id="coinsStack" class="coins-stack"></div>
-    </div>
-</div>
+        </section>
 
-<div class="row">
-    <label>
-        N (target)
-        <input id="nInput" type="number" min="2" max="200" value="20" />
-    </label>
-    <label>
-        Initial capital
-        <input id="initialInput" type="number" min="1" max="199" value="10" />
-    </label>
-    <label>
-        p(win)
-        <input id="pInput" type="number" min="0.01" max="0.99" step="0.01" value="0.5" />
-    </label>
-    <label>
-        Monte Carlo trials
-        <input id="trialsInput" type="number" min="0" max="200000" step="1000" value="20000" />
-    </label>
-</div>
+        <section class="crt-frame reveal info-block">
+            <div class="sim-frame">
+                <div id="track"></div>
 
-<button onclick="step()">Step</button>
-<button id="runBtn" onclick="letRun()">Let Run</button>
-<button onclick="reset()">Reset</button>
-<button id="explainBtn" onclick="toggleMathExplanation()">Show mathematical explanation</button>
+                <div class="scene">
+                    <div class="scene-title">Animated gambler and money pile</div>
+                    <div id="gamblerRow" class="gambler-row">
+                        <div id="gambler" class="gambler">
+                            <div class="gambler-head">
+                                <img id="gamblerFace" class="gambler-head-image" src="" alt="Gambler neutral mood" />
+                            </div>
+                            <div class="gambler-body"></div>
+                        </div>
+                        <div id="moodText" class="mood-text">Mood: focused</div>
+                    </div>
+                    <div class="coins-wrap">
+                        <div class="coins-label">Money stack (1 coin = 1 unit)</div>
+                        <div id="coinsStack" class="coins-stack"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<div id="info"></div>
+        <section class="crt-frame reveal info-block">
+            <div class="sim-frame">
+                <div class="row">
+                    <label>
+                        N (target)
+                        <input id="nInput" type="number" min="2" max="200" value="20" />
+                    </label>
+                    <label>
+                        Initial capital
+                        <input id="initialInput" type="number" min="1" max="199" value="10" />
+                    </label>
+                    <label>
+                        p(win)
+                        <input id="pInput" type="number" min="0.01" max="0.99" step="0.01" value="0.5" />
+                    </label>
+                    <label>
+                        Monte Carlo trials
+                        <input id="trialsInput" type="number" min="0" max="200000" step="1000" value="20000" />
+                    </label>
+                </div>
 
-<div id="stepStatsPanel" class="panel" style="margin-top: 12px; display: none;">
-    <pre id="stepStats">Steps: 0
+                <div class="sim-controls">
+                    <button class="btn" onclick="step()">Step</button>
+                    <button class="btn" id="runBtn" onclick="letRun()">Let Run</button>
+                    <button class="btn" onclick="reset()">Reset</button>
+                    <button class="btn" id="explainBtn" onclick="toggleMathExplanation()">Show mathematical explanation</button>
+                </div>
+
+                <div id="info"></div>
+            </div>
+        </section>
+
+        <section class="crt-frame reveal info-block">
+            <div class="panel-block">
+                <div id="stepStatsPanel" class="panel" style="display: none;">
+                    <pre id="stepStats">Steps: 0
 Expected steps (backend): not loaded
 Absorption summary: process not absorbed yet</pre>
-</div>
+                </div>
 
-<div id="mathPanel" class="panel" style="display: none;">
-    <div id="formulaOutput" class="formula-output"></div>
-    <pre id="mathOutput">Press "Show mathematical explanation" to request theory + Monte Carlo from FastAPI.</pre>
-</div>
+                <div id="mathPanel" class="panel" style="display: none;">
+                    <div id="formulaOutput" class="formula-output"></div>
+                    <pre id="mathOutput">Press "Show mathematical explanation" to request theory + Monte Carlo from FastAPI.</pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
 
 <script>
     const API_BASE_URL = "";
@@ -766,6 +854,8 @@ Absorption summary: process not absorbed yet</pre>
     renderStepStats();
     setExplanationVisible(false);
 </script>
+
+<script src="../../js/crt-shell.js"></script>
 
 </body>
 </html>

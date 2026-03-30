@@ -2,33 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Portfolio</title>
     <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
 
-<div class="container">
+<div class="noise"></div>
+<div class="crt-curvature"></div>
+<div class="orb orb-left"></div>
+<div class="orb orb-right"></div>
 
-    <h1>Portfolio</h1>
+<main class="container">
 
-    <p>
-        This section contains interactive projects designed to explain
-        mathematical concepts visually and intuitively.
-    </p>
+    <section class="crt-frame reveal info-block">
+        <h1>Portfolio</h1>
 
-    <div class="card">
-        <h2>Stochastic Simulations</h2>
         <p>
-            Interactive visualizations of random processes such as
-            random walks, Markov chains, and absorption phenomena.
+            This section contains interactive projects designed to explain
+            mathematical concepts visually and intuitively.
         </p>
+    </section>
 
-        <a class="btn" href="/portfolio/stochastic/">
-            Explore →
-        </a>
-    </div>
+    <section class="crt-frame reveal info-block">
+        <div class="card">
+            <h2>Stochastic Simulations</h2>
+            <p>
+                Interactive visualizations of random processes such as
+                random walks, Markov chains, and absorption phenomena.
+            </p>
 
-</div>
+            <a class="btn" href="/portfolio/stochastic/">
+                Explore →
+            </a>
+        </div>
+    </section>
+
+</main>
+
+<script src="../js/crt-shell.js"></script>
 
 </body>
 </html>
