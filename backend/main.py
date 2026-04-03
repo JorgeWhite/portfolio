@@ -6,10 +6,14 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
 
+birthday_router = None
 try:
     from birthday_endpoint import router as birthday_router
-except ModuleNotFoundError:
-    birthday_router = None
+except ImportError:
+    try:
+        from .birthday_endpoint import router as birthday_router
+    except ImportError:
+        birthday_router = None
 
 app = FastAPI()
 
