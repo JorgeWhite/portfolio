@@ -396,8 +396,10 @@ def birthday_runtime_assets(file_path: str) -> FileResponse:
     return FileResponse(asset_path)
 
 
-@router.get("/felizcumpleanoskarlita", response_class=HTMLResponse)
+@router.get("/felizcumpleanos", response_class=HTMLResponse)
 @router.get("/felizcumpleanos/", response_class=HTMLResponse)
+@router.get("/felizcumpleanoskarlita", response_class=HTMLResponse)
+@router.get("/felizcumpleanoskarlita/", response_class=HTMLResponse)
 @router.get("/felizcumpleaños", response_class=HTMLResponse)
 @router.get("/felizcumpleaños/", response_class=HTMLResponse)
 def birthday_secret_page() -> Response:
