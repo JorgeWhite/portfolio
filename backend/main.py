@@ -1,9 +1,15 @@
 import math
+import os
 import random
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, model_validator
+
+try:
+    from birthday_endpoint import router as birthday_router
+except ModuleNotFoundError:
+    birthday_router = None
 
 app = FastAPI()
 
@@ -135,4 +141,8 @@ def root():
 @app.get("/hello")
 def hello():
     return {"hello": "Hello from FastAPI, Deployment test succesful, newer version"}
+
+
+if os.getenv("ENABLE_BIRTHDAY_ENDPOINT", "1") == "1" and birthday_router is not None:
+    app.include_router(birthday_router)
 
